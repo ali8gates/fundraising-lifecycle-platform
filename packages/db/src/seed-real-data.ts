@@ -221,13 +221,17 @@ async function main() {
     { name: 'MedCity News', url: 'https://medcitynews.com/feed/' },
     { name: 'MobiHealthNews', url: 'https://www.mobihealthnews.com/feed' },
     { name: 'FierceHealthcare', url: 'https://www.fiercehealthcare.com/rss.xml' },
+    { name: 'FierceBiotech', url: 'https://www.fiercebiotech.com/rss.xml' },
     { name: 'Rock Health', url: 'https://rockhealth.com/feed/' },
     { name: 'CB Insights Health', url: 'https://www.cbinsights.com/research/tag/healthcare/feed/' },
     { name: 'FDA Press Releases', url: 'https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/press-releases' },
     { name: 'NIH News Releases', url: 'https://www.nih.gov/news-events/news-releases/all.xml' },
     { name: 'HealthTech Magazine', url: 'https://healthtechmagazine.net/rss.xml' },
     { name: 'HIT Consultant', url: 'https://hitconsultant.net/feed/' },
-    { name: 'Crunchbase News', url: 'https://news.crunchbase.com/feed/' }
+    { name: 'Crunchbase News', url: 'https://news.crunchbase.com/feed/' },
+    { name: 'TechCrunch', url: 'https://techcrunch.com/feed/' },
+    { name: 'VentureBeat', url: 'https://venturebeat.com/feed/' },
+    { name: 'FinSMEs', url: 'https://www.finsmes.com/feed/' },
   ];
 
   for (const feed of rssFeeds) {
@@ -263,7 +267,7 @@ async function main() {
           fundingAmount: c.fundingAmount,
           revenueAmount: c.revenueAmount,
           totalScore: score,
-          stage: score > 0.70 ? Stage.OUTREACH : score > 0.55 ? Stage.QUALIFIED : Stage.NEW,
+          stage: score > 0.55 ? Stage.QUALIFIED : Stage.NEW,
         },
       });
 

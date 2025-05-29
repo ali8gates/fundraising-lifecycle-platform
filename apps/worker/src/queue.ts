@@ -1,11 +1,12 @@
-import { Queue, Worker, QueueScheduler, JobsOptions } from 'bullmq';
+import { Queue, Worker, JobsOptions } from 'bullmq';
 import IORedis from 'ioredis';
 
-const connection = new IORedis(process.env.REDIS_URL ?? 'redis://localhost:6379');
+// BullMQ v5 requires maxRetriesPerRequest: null when using IORedis
+const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379';
+const connection = new IORedis(redisUrl, { maxRetriesPerRequest: null });
 
 export const ingestQueueName = 'ingest';
 export const ingestQueue = new Queue(ingestQueueName, { connection });
-export const ingestScheduler = new QueueScheduler(ingestQueueName, { connection });
 
 export function createWorker(handler: Parameters<typeof Worker>[1]) {
   return new Worker(ingestQueueName, handler, { connection });

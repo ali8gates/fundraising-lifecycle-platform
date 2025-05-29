@@ -38,18 +38,37 @@ export default async function SettingsPage() {
                 <span className={process.env.ANGELLIST_API_KEY ? 'text-emerald-700 text-xs' : 'text-slate-500 text-xs'}>{process.env.ANGELLIST_API_KEY ? '✓ Configured' : '○ Not set'}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span>SEC EDGAR</span>
+                <span>OpenCorporates API</span>
+                <span className={process.env.OPENCORPORATES_API_KEY ? 'text-emerald-700 text-xs' : 'text-slate-500 text-xs'}>{process.env.OPENCORPORATES_API_KEY ? '✓ Configured' : '○ Optional (works without key)'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Alpha Vantage API</span>
+                <span className={process.env.ALPHA_VANTAGE_API_KEY ? 'text-emerald-700 text-xs' : 'text-slate-500 text-xs'}>{process.env.ALPHA_VANTAGE_API_KEY ? '✓ Configured' : '○ Not set'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Marketaux API</span>
+                <span className={process.env.MARKETAUX_API_KEY ? 'text-emerald-700 text-xs' : 'text-slate-500 text-xs'}>{process.env.MARKETAUX_API_KEY ? '✓ Configured' : '○ Not set'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>NewsAPI.org</span>
+                <span className={process.env.NEWSAPI_API_KEY ? 'text-emerald-700 text-xs' : 'text-slate-500 text-xs'}>{process.env.NEWSAPI_API_KEY ? '✓ Configured' : '○ Not set'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>NewsData.io</span>
+                <span className={process.env.NEWSDATA_API_KEY ? 'text-emerald-700 text-xs' : 'text-slate-500 text-xs'}>{process.env.NEWSDATA_API_KEY ? '✓ Configured' : '○ Not set'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>SEC EDGAR (legacy + data.sec.gov)</span>
+                <span className="text-emerald-700 text-xs">✓ Free</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>OpenFDA (Enforcement / Device Recalls)</span>
                 <span className="text-emerald-700 text-xs">✓ Free</span>
               </div>
             </div>
             <hr className="my-2" />
             <div className="text-xs text-slate-600 bg-amber-50 p-2 rounded">
-              <strong>Setup:</strong> Add API keys to your <code className="text-xs font-mono">.env</code>:
-              <ul className="list-disc pl-4 mt-1">
-                <li><code className="text-xs font-mono">CRUNCHBASE_API_KEY=...</code></li>
-                <li><code className="text-xs font-mono">ANGELLIST_API_KEY=...</code></li>
-              </ul>
-              Then restart the worker.
+              <strong>Setup:</strong> Add API keys to <code className="text-xs font-mono">.env</code> (see <code className="text-xs font-mono">.env.example</code> and <code className="text-xs font-mono">DATA_SOURCES.md</code>), then restart the worker.
             </div>
           </div>
         </div>
@@ -58,10 +77,14 @@ export default async function SettingsPage() {
         <div className="card-header">Data Source Status</div>
         <div className="card-body text-sm text-slate-700">
           <div className="space-y-2">
-            <p><strong>RSS Feeds:</strong> Ingesting from {connectors.filter(c => c.isEnabled).length} sources</p>
-            <p><strong>Crunchbase:</strong> Healthcare, medtech, biotech industries (if API key configured)</p>
-            <p><strong>AngelList:</strong> Healthcare startups (if API key configured)</p>
-            <p><strong>SEC EDGAR:</strong> S-1 IPO filings for healthcare companies</p>
+            <p><strong>RSS Feeds:</strong> Ingesting from {connectors.filter(c => c.isEnabled).length} sources (healthcare, TechCrunch, VentureBeat, FinSMEs, FierceBiotech, etc.)</p>
+            <p><strong>Crunchbase:</strong> Funding rounds, company info (if API key set)</p>
+            <p><strong>AngelList:</strong> Healthcare startups (if API key set)</p>
+            <p><strong>OpenCorporates:</strong> Company registry lookups (optional key)</p>
+            <p><strong>Alpha Vantage:</strong> Market news/sentiment for healthcare tickers (if API key set)</p>
+            <p><strong>Marketaux / NewsAPI / NewsData:</strong> Financial & healthtech news (if API keys set)</p>
+            <p><strong>SEC EDGAR:</strong> S-1/10-K/8-K filings + data.sec.gov JSON (free)</p>
+            <p><strong>OpenFDA:</strong> Enforcement reports & device recalls (free)</p>
             <p className="text-xs text-slate-500 mt-3">
               ℹ️ Data enrichment runs every {process.env.INGEST_INTERVAL_MINS || '30'} minutes. Companies are auto-created from signal domains and specialties are auto-classified.
             </p>
