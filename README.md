@@ -61,8 +61,9 @@ generation of donors and volunteers actually started.
 Three things were true at once:
 
 1. Nobody could answer "who should we be talking to next" without a person spending a week on it.
-2. The systems of record were not designed for this segment. Records arrived through a donor CRM
-   built around households and constituents, and a school contact does not fit that shape cleanly.
+2. The systems of record were not designed for this segment. Records arrived through Blackbaud
+   Raiser's Edge NXT, built around households and constituents, and a school contact does not fit
+   that shape cleanly.
 3. Adoption was the binding constraint. A two person advancement office was not going to log into a
    second system unless it saved them time the same week.
 
@@ -93,8 +94,9 @@ acceptance criteria an engineer worked from.
 
 ## The integration problem, which is the real problem
 
-Everything above depends on data arriving from a donor CRM, and that is where the work actually was.
-The failures were not random. They had four shapes, and they needed four different answers.
+Everything above depends on data arriving correctly from Blackbaud Raiser's Edge NXT, and that is
+where the work actually was. The failures were not random. They had four shapes, and they needed four
+different answers. Full detail is in [docs/integration-reliability.md](docs/integration-reliability.md).
 
 ![Where the sync actually breaks](docs/sync-failure-map.png)
 
