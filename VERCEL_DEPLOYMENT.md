@@ -92,9 +92,9 @@ redis://default:password@usw1-xxx.upstash.io:6379
 3. **Import your GitHub repository** (chti-innovators-network)
 4. **Configure the project:**
    - **Framework Preset**: Next.js (auto-detected)
-   - **Root Directory**: `apps/web` (important!)
-   - **Build Command**: `cd ../.. && pnpm install && pnpm --filter @chti/web build`
-   - **Output Directory**: `.next` (default)
+   - **Root Directory**: `apps/web` **(required – build will fail otherwise)**
+   - **Build Command**: `cd ../.. && pnpm --filter @chti/db prisma generate && pnpm --filter @chti/web build`
+   - **Output Directory**: `.next` (must be `.next` when Root is `apps/web`, not `apps/web/.next`)
    - **Install Command**: `cd ../.. && pnpm install`
 
 5. **Add Environment Variables** (click "Environment Variables"):
@@ -257,7 +257,23 @@ Add these to **Vercel** (Project Settings → Environment Variables):
 **Solution**: 
 - Ensure `Root Directory` is set to `apps/web`
 - Check build command includes `cd ../.. && pnpm install`
-- Verify `vercel.json` is in project root
+- Verify `vercel.json` is at the repository root (it defines install/build/output for the `apps/web` app when Root Directory is `apps/web`)
+
+**Issue**: Build fails right after "Vercel CLI" or "Output directory not found" / "No Output Directory"
+**Solution**:
+- **Root Directory** must be `apps/web` in Project Settings → General → Root Directory
+- **Output Directory** must be `.next` (not `apps/web/.next`) when Root is `apps/web`
+- The repo includes `vercel.json` at the repository root; if you override in the Dashboard, use the same Install Command, Build Command, and Output Directory (`.next`) as in `vercel.json`
+
+**Issue**: `prisma generate` or Prisma errors during build
+**Solution**:
+- `prisma generate` does not need a real database; ensure `DATABASE_URL` is set in Vercel (a placeholder like `postgresql://user:pass@localhost:5432/db` is fine for build if the real DB is not reachable)
+- Build order must include: `pnpm --filter @chti/db prisma generate` before `pnpm --filter @chti/web build`
+
+**Issue**: `pnpm` not found or wrong package manager
+**Solution**:
+- The repo uses pnpm (`pnpm-lock.yaml`, `packageManager` in root `package.json`). Ensure no Dashboard override forces npm or yarn.
+- If needed, set **Install Command** to `cd ../.. && pnpm install` when Root is `apps/web`
 
 ### Database Connection Errors
 

@@ -26,7 +26,8 @@ git push -u origin main
 2. Import your GitHub repo
 3. **Configure:**
    - Root Directory: `apps/web`
-   - Build Command: `cd ../.. && pnpm install && pnpm --filter @chti/db prisma generate && pnpm --filter @chti/web build`
+   - Build Command: `cd ../.. && pnpm --filter @chti/db prisma generate && pnpm --filter @chti/web build`
+   - Output Directory: `.next` (if overriding; must be `.next` when Root is `apps/web`)
 4. **Add Environment Variables:**
    ```
    DATABASE_URL=your_railway_postgres_url
