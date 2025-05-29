@@ -1,5 +1,18 @@
 # Case study: building the segment pipeline from zero
 
+## My seat
+
+This was at the American Heart Association. I worked hands on in our Salesforce instance on the donor
+CRM and the pipeline data, and separately I owned the registry business, which had gone close to a
+decade without being unified before I got it done.
+
+That is the relevant background for everything below. I was not a product manager writing requirements
+for a data problem I had heard about secondhand. I was in the records, working alongside the
+fundraising and engagement teams who used them and the donor data team who owned them. The design
+decisions in this document came out of that proximity, and the one that mattered most, holding
+ambiguous records back instead of writing them through, came directly from the CRM team telling me
+what would break.
+
 ## Where this started
 
 A segment that produced less than one percent of the organization's fundraising goal. Under two

@@ -1,6 +1,6 @@
 # Fundraising Lifecycle Platform
 
-A pipeline and prospecting platform I designed and built at a national health nonprofit to run one
+A pipeline and prospecting platform I designed and built at the American Heart Association to run one
 fundraising segment end to end: identify, qualify, cultivate, solicit, steward.
 
 I built it because the segment was stalled and the reason was not donor willingness. It was that
@@ -10,6 +10,46 @@ deployed. The write up below covers the approach, the tradeoffs, the code, and t
 
 This repository is a working monorepo, not a deck. The product documents point at the files that
 implement them.
+
+## Where I was sitting when I built this
+
+Context matters for this one, because the reason I could build it at all was where I sat.
+
+At the American Heart Association I worked hands on inside our Salesforce instance, on the donor CRM
+and the pipeline data itself. Not adjacent to it, in it. That meant writing and reviewing the records
+the fundraising teams worked from, understanding how a gift got attributed to an initiative, and
+knowing exactly which fields were reliable and which ones people had quietly stopped trusting years
+earlier.
+
+Separately I owned the registry business. Unifying that system had been attempted for close to a
+decade before I joined. Getting it done is what earned me the standing to touch donor data, and it is
+also where I learned that the hard part of this work is almost never the schema. It is convincing the
+people who are accountable for a record that a new system will not damage it.
+
+The organization ran fundraising on two very different tracks at once. There were the large national
+initiatives, raising many millions on a quarterly and annual cycle, with dedicated staff and mature
+process behind them. Then there was the ground level work in high schools, where teachers, students,
+and local professionals raised awareness and money for the same causes. Both tracks fed the same
+mission. Only one of them had a functioning pipeline.
+
+Who I worked with day to day, and what each group needed from me:
+
+- **The fundraising and engagement teams.** Regional staff deciding where to spend travel time, and
+  initiative owners who needed to know which gifts belonged to their campaign. Their problem was that
+  a school visit could not be justified against anything but a hunch, and attribution after the fact
+  was manual.
+- **The donor data and CRM team.** They owned the record of truth and they were right to be cautious.
+  A household and constituent model does not cleanly represent a school contact, so any automated
+  write risked duplicates or a gift credited to the wrong person. I brought them in before the write
+  path existed rather than after, and their objection is what produced the review queue.
+- **School advancement staff.** Often one or two people who also ran events and communications. They
+  were not going to adopt a second system unless it gave time back the same week.
+- **Engineering.** I wrote the schema, the criteria engine, and the mapping layer myself so that
+  design arguments started from working code and a failing test instead of a document.
+
+So when I say the bottleneck was data movement and identity rather than reporting, that is not a
+retrospective framing. It is what the donor data team told me in the first month, and I built around
+it.
 
 ## The unmet need
 
