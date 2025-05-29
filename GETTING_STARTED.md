@@ -1,12 +1,12 @@
 # Start here — CHTI Business Scouting Tool setup
 
-This guide is in your project folder. In Cursor or your file explorer, look for **GETTING_STARTED.md** in the main project folder (the same folder that has `package.json`, `apps/`, and `packages/`).
+This guide is in your project folder. Look for **GETTING_STARTED.md** in the main project folder (the same folder that has `package.json`, `apps/`, and `packages/`).
 
 ---
 
 ## 1. Open a terminal in the project folder
 
-- **In Cursor:** Terminal → New Terminal. If you’re not already in the project, run:
+- **In your editor:** open a new terminal. If you’re not already in the project, run:
   ```bash
   cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
   ```
