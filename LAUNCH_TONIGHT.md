@@ -1,4 +1,4 @@
-# AI Innovators Network Pilot – Test Against Real Data Tonight
+# CHTI Business Scouting Tool Pilot – Test Against Real Data Tonight
 
 Use this checklist to run the pilot with **real API data** (not just RSS/SEC/OpenFDA).
 

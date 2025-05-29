@@ -1,6 +1,6 @@
 # Data Sources Guide
 
-This guide explains all data connectors integrated into the CHTI Innovators Network pilot. Each source is wired into the enrichment pipeline and runs on the configured interval (default 30 minutes).
+This guide explains all data connectors integrated into the CHTI Business Scouting Tool pilot. Each source is wired into the enrichment pipeline and runs on the configured interval (default 30 minutes).
 
 ---
 

@@ -1,4 +1,4 @@
-# Start here — CHTI app setup
+# Start here — CHTI Business Scouting Tool setup
 
 This guide is in your project folder. In Cursor or your file explorer, look for **GETTING_STARTED.md** in the main project folder (the same folder that has `package.json`, `apps/`, and `packages/`).
 
@@ -66,7 +66,7 @@ From the **same project folder** (repo root):
 pnpm dev
 ```
 
-When it’s ready, open in your browser: **http://localhost:3001**
+When it’s ready, open in your browser: **http://localhost:3001** or **http://127.0.0.1:3001**
 
 To stop the app: press **Ctrl+C** in the terminal.
 
@@ -108,7 +108,7 @@ Do a hard refresh in the browser: **Cmd+Shift+R** (Mac) or **Ctrl+Shift+R** (Win
 | Run the app             | `pnpm dev`                    |
 | Stop the app            | Ctrl+C in the terminal        |
 | Apply DB/code updates   | `pnpm apply-updates` then `pnpm dev` |
-| Open the app in browser | http://localhost:3001        |
+| Open the app in browser | http://localhost:3001 or http://127.0.0.1:3001 |
 
 **Repo root** = the folder that contains `package.json`, `apps/`, and `packages/` (e.g. `chti-innovators-network`). Don’t run these commands from inside `packages/db` or `apps/web`.
 

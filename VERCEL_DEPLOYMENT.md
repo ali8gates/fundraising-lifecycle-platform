@@ -1,6 +1,6 @@
 # Vercel Deployment Guide
 
-This guide will help you deploy the AI Innovators Network to Vercel for production.
+This guide will help you deploy the CHTI Business Scouting Tool to Vercel for production.
 
 ## 🏗️ Architecture Overview
 
@@ -28,7 +28,7 @@ cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
 # Initialize git if needed
 git init
 git add .
-git commit -m "Initial commit - AI Innovators Network"
+git commit -m "Initial commit - CHTI Business Scouting Tool"
 
 # Create a new repo on GitHub, then:
 git remote add origin https://github.com/YOUR_USERNAME/chti-innovators-network.git
@@ -311,9 +311,12 @@ Add these to **Vercel** (Project Settings → Environment Variables):
 
 ## 🚀 Next Steps
 
-1. **Add Custom Domain** (optional):
+1. **Add Custom Domain** (production URL: **chti-scout.com**):
    - In Vercel, go to Project Settings → Domains
-   - Add your domain and configure DNS
+   - Add **chti-scout.com** (and optionally **www.chti-scout.com**)
+   - Follow Vercel’s DNS instructions at your registrar (add the A/CNAME records they show)
+   - Set **chti-scout.com** as the primary domain if desired
+   - After DNS propagates, the app will be live at **https://chti-scout.com**
 
 2. **Set Up Monitoring**:
    - Vercel Analytics (included)

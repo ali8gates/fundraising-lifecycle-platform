@@ -2,7 +2,7 @@ import type { Signal } from '@chti/shared';
 import { fetch } from 'undici';
 
 const DATA_SEC_BASE = 'https://data.sec.gov';
-const USER_AGENT = 'CHTI Innovators Network (pilot)';
+const USER_AGENT = 'CHTI Business Scouting Tool (pilot)';
 
 /**
  * SEC EDGAR data.sec.gov – free JSON API for public company filings.
