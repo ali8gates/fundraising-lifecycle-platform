@@ -1,226 +1,149 @@
-# CHTI Business Scouting Tool (MVP)
+# Fundraising Lifecycle Platform
 
-**New here?** → See **[GETTING_STARTED.md](./GETTING_STARTED.md)** for step-by-step setup and where to run commands.
+A pipeline and prospecting platform I designed and built at a national health nonprofit to run one
+fundraising segment end to end: identify, qualify, cultivate, solicit, steward.
 
-An MVP platform for AHA's Innovators Network to ingest public healthcare startup signals, auto-categorize by specialty, score and gate candidates, and support outreach + meeting booking + pipeline tracking.
+I built it because the segment was stalled and the reason was not donor willingness. It was that
+nobody could see the pipeline. Prospect research sat in spreadsheets and inboxes, donor records sat
+in the CRM, and the two never met. Sixty days after the first customer conversation the platform was
+deployed. The write up below covers the approach, the tradeoffs, the code, and the numbers.
 
-## Tech
-- Frontend: Next.js 14 (App Router), TypeScript, TailwindCSS
-- Backend: Next.js API routes + background worker (BullMQ)
-- Queue: Redis
-- DB: PostgreSQL + Prisma ORM
-- Search: Postgres basic filtering (FTS-ready)
-- Tests: Vitest
-- Packaging: Docker Compose (Postgres + Redis) or Homebrew services
-- Lint/format: ESLint, Prettier
+This repository is a working monorepo, not a deck. The product documents point at the files that
+implement them.
 
-## Monorepo
-- `/apps/web` — Next.js app
-- `/apps/worker` — BullMQ worker and cron jobs
-- `/packages/db` — Prisma schema, client, seed
-- `/packages/shared` — shared types, scoring lib
+## The unmet need
 
-## Data Sources
+The school and youth segment produced less than one percent of the organization's overall fundraising
+goal. Under two million dollars in total, from roughly thirty schools. Meanwhile the organization ran
+national initiatives raising many multiples of that, and the school segment was where the next
+generation of donors and volunteers actually started.
 
-### Included (Free)
-- **RSS/Atom Feeds** (10 healthcare news sources seeded)
-- **SEC EDGAR** – S-1 IPO filings for healthcare companies
-- **Keyword + TF-IDF classifier** – auto-assigns specialties to signals
+Three things were true at once:
 
-### Optional (Paid APIs)
-- **Crunchbase API** – healthcare, medtech, biotech industries + funding data
-- **AngelList API** – startup funding and investor signals
+1. Nobody could answer "who should we be talking to next" without a person spending a week on it.
+2. The systems of record were not designed for this segment. Records arrived through a donor CRM
+   built around households and constituents, and a school contact does not fit that shape cleanly.
+3. Adoption was the binding constraint. A two person advancement office was not going to log into a
+   second system unless it saved them time the same week.
 
-### Setup Instructions
-1. **RSS Feeds**: Configured by default; manage in Settings → RSS/Atom Feeds
-2. **Crunchbase**: 
-   - Get API key from [https://about.crunchbase.com/products/crunchbase-api/](https://about.crunchbase.com/products/crunchbase-api/)
-   - Add to `.env`: `CRUNCHBASE_API_KEY=your_key`
-3. **AngelList**: 
-   - Register at [https://angel.co](https://angel.co) for API access
-   - Add to `.env`: `ANGELLIST_API_KEY=your_key`
-4. Restart the worker: `pkill -f "ts-node src/index.ts"; pnpm --filter @chti/worker dev`
+So the problem was never a reporting problem. It was a data movement and identity problem wearing a
+reporting problem's clothes.
 
-The enrichment pipeline (in `apps/worker/src/jobs/enrichmentPipeline.ts`) runs every 30 mins (configurable via `INGEST_INTERVAL_MINS`).
+## What I built
 
-## Basic steps
+Five stages, one canonical record underneath them, and a mapping layer that is the only place vendor
+field names are allowed to appear.
 
-**First-time setup (once per machine)**  
-1. Start PostgreSQL and Redis (e.g. `brew services start postgresql@16 redis` and `createdb chti`).  
-2. From the **repo root**: `pnpm install` → `pnpm --filter @chti/db prisma migrate deploy` → `pnpm --filter @chti/db exec prisma generate` → `pnpm prisma:seed` (optional).  
-3. Copy `.env.example` to `.env` and set `DATABASE_URL`, `REDIS_URL`, `APP_BASE_URL`.
+![The fundraising lifecycle, as built](docs/lifecycle-pipeline.png)
 
-**Run the app (daily)**  
-1. From the **repo root**: `pnpm dev`.  
-2. Open **http://localhost:3001**.
+- **Identify.** A background worker pulls public signals on a schedule, enriches each candidate from
+  its own site text, and deduplicates before anything reaches a human.
+- **Qualify.** A written criteria engine returns a tier and the reasons for it. The interface shows
+  the reasons, not the score, which is the single change that got fundraisers to trust it.
+- **Cultivate.** Contact discovery, meeting scheduling, and an owner on every record, so a regional
+  visit could be justified against something other than a hunch.
+- **Solicit.** Outreach events with a channel and an outcome, and every ask tied to a designation so
+  giving could be attributed to a named initiative.
+- **Steward.** Stage history and score snapshots over time, so renewal and lapse were visible instead
+  of discovered.
 
-**After pulling new code (migrations or schema changes)**  
-1. From the **repo root**: `pnpm apply-updates` (or `prisma migrate deploy` + `prisma generate` in `@chti/db`).  
-2. Restart the dev server (Ctrl+C, then `pnpm dev`).  
-3. Hard-refresh the browser (Cmd+Shift+R or Ctrl+Shift+R).
+Read [docs/lifecycle-model.md](docs/lifecycle-model.md) for what enters and exits each stage, and
+[docs/functional-requirements.md](docs/functional-requirements.md) for the numbered requirements and
+acceptance criteria an engineer worked from.
 
----
+## The integration problem, which is the real problem
 
-## Quick Start
+Everything above depends on data arriving from a donor CRM, and that is where the work actually was.
+The failures were not random. They had four shapes, and they needed four different answers.
 
-### Easy Launch (Recommended)
-```bash
-# Simply run the launch script
-./launch.sh
+![Where the sync actually breaks](docs/sync-failure-map.png)
+
+Outbound to the CRM held, because I controlled the payload, the retry, and the schedule. Inbound was
+where every incident came from. A constituent profile could require a child's school name and an
+email address, which means an inbound record cannot reliably tell you whether it describes the adult
+in the household or the child. That is an entity resolution problem created by how the source
+structures its fields, not a transport problem, and no amount of retry logic fixes it.
+
+What I did about it:
+
+- Wrote the canonical constituent model first, then treated every source system as a mapping into it.
+  Vendor field names never spread past one directory.
+- Resolved household role with ordered signals and a confidence value instead of guessing. Below the
+  confidence floor a record is held for review and never written through to a system of record.
+- Treated inbound and outbound as separate products with separate contracts, separate tests, and
+  separate alerting, because they fail for different reasons.
+- Selected a mapping profile per institution and per environment, so an older edition with a missing
+  relationship field is a configuration entry rather than a code branch.
+- Recorded counts on both sides after every run, so a run that reports success and moves nothing
+  shows up as a count mismatch instead of a support ticket six weeks later.
+
+[docs/integration-reliability.md](docs/integration-reliability.md) is the long version, including the
+failure catalogue and what I would build first if I were starting on this problem again tomorrow.
+
+## Outcomes
+
+- Shipped in about sixty days, first conversation to deployed product.
+- Deployed to roughly fourteen schools.
+- Eighty thousand dollars in new giving in the six months after launch, from net new donors
+  attributed to prospecting and tied to named strategic initiatives.
+- Prospect research stopped being a weekly manual exercise across the team. The recurring cost of
+  running the platform was a hosting bill and two paid data feeds, which came in well under the
+  quoted annual price of a single commercial prospect research seat.
+
+The honest framing: eighty thousand dollars is not a large number against a national fundraising
+goal. It mattered because it came from a segment that had produced almost nothing, it was attributable,
+and it was produced by fourteen schools rather than thirty, which made the per school economics
+arguable for the first time.
+
+## Who the customers were
+
+- School advancement staff, often one or two people who also run events and communications.
+- The organization's school engagement staff, who owned the relationships.
+- Regional fundraising staff, who needed a defensible reason to spend a campus visit on one school
+  and not another.
+- The donor data and CRM team, who owned the record of truth and had a legitimate objection to any
+  new system writing into it. That objection is why the review queue exists.
+- Strategic initiative owners, who needed giving attributed to their initiative.
+
+## Code
+
+```
+apps/web        Next.js 14 App Router, TypeScript, Tailwind, API routes
+apps/worker     BullMQ worker, scheduled ingestion, connectors, enrichment
+packages/db     Prisma schema, migrations, seed
+packages/shared types, scoring, criteria engine, lifecycle model, CRM mapping layer
 ```
 
-The script will:
-- Check and set up pnpm if needed
-- Create .env from .env.example if missing
-- Check if PostgreSQL and Redis are running
-- Install dependencies if needed
-- Generate Prisma client if needed
-- Start the development server
+The parts worth reading first:
 
-Then open: **http://localhost:3001**
+| What | Where |
+| --- | --- |
+| Canonical five stage model and stage transition rules | `packages/shared/src/lifecycle.ts` |
+| Canonical constituent and gift shapes | `packages/shared/src/crm/canonical.ts` |
+| Per system and per environment mapping profiles | `packages/shared/src/crm/mapping.ts` |
+| Household role resolution and the review queue rule | `packages/shared/src/crm/household.ts` |
+| Directional reconciliation and silent failure detection | `packages/shared/src/crm/reconcile.ts` |
+| Written criteria engine and tiering | `packages/shared/src/fit/fitEngine.ts` |
+| Scoring with configurable weights and thresholds | `packages/shared/src/scoring.ts` |
+| Ingestion pipeline and connectors | `apps/worker/src/jobs/enrichmentPipeline.ts`, `apps/worker/src/connectors/` |
+| Data model | `packages/db/prisma/schema.prisma` |
+| Tests | `packages/shared/tests/`, `apps/worker/tests/` |
 
-### Manual Setup (macOS with Homebrew)
-```bash
-# Start services
-brew install postgresql@16 redis
-brew services start postgresql@16
-brew services start redis
-createdb chti
+Setup and deployment notes are in [docs/ops/](docs/ops/).
 
-# Install & run
-cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
-cp .env.example .env
-sed -i '' "s|DATABASE_URL=.*|DATABASE_URL=postgresql://$(id -un)@localhost:5432/chti?schema=public|" .env
-corepack enable
-corepack prepare pnpm@9.0.0 --activate
-pnpm install
-pnpm --filter @chti/db prisma generate
-pnpm --filter @chti/db prisma migrate deploy
-pnpm prisma:seed
-pnpm dev
-```
+## Documents
 
-Then open: **http://localhost:3001**
+| File | Contents |
+| --- | --- |
+| [docs/case-study.md](docs/case-study.md) | The 0 to 1 account: the questions I asked, the tradeoffs I made, what I cut, how I worked with engineering and the fundraising teams |
+| [docs/integration-reliability.md](docs/integration-reliability.md) | The donor CRM failure catalogue, the guard layer, monitoring, and what I would build first now |
+| [docs/lifecycle-model.md](docs/lifecycle-model.md) | The five stages, stage by stage, mapped to the schema and the code |
+| [docs/functional-requirements.md](docs/functional-requirements.md) | Numbered requirements with acceptance criteria and the file that satisfies each one |
+| [docs/role-alignment.md](docs/role-alignment.md) | How this maps to a role owning data and integrations, including what I have not done |
 
-### Seeing code/DB updates on localhost
-If you pulled new code (e.g. AI Assessment Lab badges, enriched web text) and don’t see changes:
+## Why this is in my portfolio
 
-1. **Apply DB migrations and regenerate Prisma client** — run from the **repo root** (not from `packages/db`):
-   ```bash
-   cd /path/to/chti-innovators-network   # repo root
-   pnpm apply-updates
-   ```
-   Or manually (from repo root):
-   ```bash
-   pnpm --filter @chti/db prisma migrate deploy
-   pnpm --filter @chti/db exec prisma generate
-   ```
-
-2. **Restart the dev server**  
-   Stop the running `pnpm dev` (Ctrl+C), then start it again:
-   ```bash
-   pnpm dev
-   ```
-
-3. **(Optional) Re-classify existing companies** (scrape websites and recompute fit):
-   ```bash
-   pnpm --filter @chti/worker exec tsx src/scripts/backfillFit.ts
-   ```
-
-Then hard-refresh the app (e.g. Cmd+Shift+R or Ctrl+Shift+R) or open **http://localhost:3001/companies** again.
-
-### Docker
-```bash
-docker-compose up -d
-pnpm install
-pnpm --filter @chti/db prisma migrate deploy
-pnpm prisma:seed
-pnpm dev
-```
-
-### Security layer (gate)
-On **localhost** and **production**, CHTI Business Scouting Tool shows a **gate page** first: visitors must enter a 7-digit access code before seeing Dashboard, Companies, or Settings. The gate is enforced by middleware; after a valid code, a cookie is set for 7 days.  
-- **Default code** (change in production): set `GATE_ACCESS_CODE` or `CHTI_GATE_CODE` in `.env` or your host’s env (e.g. Vercel).  
-- **Local:** Open **http://localhost:3001** or **http://127.0.0.1:3001** — you’ll be redirected to `/gate` until you enter the code.
-
----
-
-## Push to production
-
-**Production URL:** **https://chti-scout.com** — Add the domain in Vercel (Project Settings → Domains) and point your DNS to Vercel; set `APP_BASE_URL=https://chti-scout.com` in production env.
-
-1. **Push your branch to GitHub** (from repo root):
-   ```bash
-   git add -A && git commit -m "Your message" && git push origin YOUR_BRANCH
-   ```
-
-2. **Deploy** (depends on your host):
-   - **Vercel:** Connect the repo at [vercel.com](https://vercel.com). Set **Root Directory** to the repo root; set **Framework Preset** to Next.js and **Application (app) directory** to `apps/web` if required. Add env vars (e.g. `DATABASE_URL`, `REDIS_URL`, `APP_BASE_URL`, `GATE_ACCESS_CODE`). Trigger a deploy from the dashboard or via `vercel --prod` from the repo root (if Vercel CLI is linked).
-   - **Other hosts:** Build with `pnpm build` (from root), then run the output (e.g. `pnpm --filter @chti/web start` from root after build). Set the same env vars and run DB migrations on the production DB.
-
-3. **Production env vars:** At least `DATABASE_URL`, `REDIS_URL`, `APP_BASE_URL` (your production URL). Set `GATE_ACCESS_CODE` to a secure 7-digit code so the security layer works in production.
-
-4. **Database:** Run migrations against the production DB once:  
-   `pnpm --filter @chti/db prisma migrate deploy` (with `DATABASE_URL` pointing at production).
-
-## Acceptance Checklist (MVP)
-- ✓ Add RSS feeds in Settings; worker ingests and Signals appear.
-- ✓ New companies auto-created from novel domains with auto-classified specialties.
-- ✓ Scores computed with editable weights; stage gates move automatically.
-- ✓ Search/filter companies by specialty and score.
-- ✓ Log outreach, schedule a meeting, and download ICS.
-- ✓ Dashboard shows core KPIs (stage breakdown, weekly signals, avg score).
-- ✓ Integrate external data sources (Crunchbase, AngelList, SEC, RSS).
-
-## Data Model (Prisma)
-- `Company`, `Signal`, `ScoreSnapshot`, `OutreachEvent`, `Meeting`, `Connector`, `User`, `AppConfig`
-
-## Assumptions
-- Role-based access via `ADMIN_API_KEY` header on admin routes (simple, no PHI).
-- Specialty classification uses keywords + TF-IDF cosine similarity (in-memory); hook provided to swap in LLM later.
-- Postgres full-text search can be enabled later; MVP uses indexed columns and ILIKE filtering.
-- ICS generated server-side; Google/Outlook links constructed as URLs.
-- External APIs are optional; RSS and SEC sources are always free.
-
-## Environment Variables
-```bash
-# Required
-DATABASE_URL=postgresql://user@localhost:5432/chti?schema=public
-REDIS_URL=redis://localhost:6379
-APP_BASE_URL=http://localhost:3001   # production: https://chti-scout.com
-
-# Admin
-ADMIN_API_KEY=replace-with-strong-random
-
-# Optional API Keys
-CRUNCHBASE_API_KEY=
-ANGELLIST_API_KEY=
-
-# Worker
-INGEST_INTERVAL_MINS=30
-```
-
-## Scripts
-- `pnpm dev` → web and worker
-- `pnpm --filter @chti/web dev -p 3001` → web only
-- `pnpm --filter @chti/worker dev` → worker only
-- `pnpm prisma:migrate` → run pending migrations
-- `pnpm prisma:seed` → populate seed data
-
-## Tests
-- Unit: scoring normalization and weighted total (`packages/shared/tests/scoring.test.ts`)
-- Ingestion: RSS parser transforms to Signal shape (`apps/worker/tests/rss-transform.test.ts`)
-
-Run: `pnpm test`
-
-## Security
-- Public data only; no PHI
-- Secrets via env; nothing hardcoded
-- Admin-only endpoints require `x-admin-key: $ADMIN_API_KEY`
-
----
-
-For connector code, see `/apps/worker/src/connectors` (rss.ts, crunchbase.ts, angellist.ts, sec.ts).
-For enrichment pipeline, see `/apps/worker/src/jobs/enrichmentPipeline.ts`.
-For seeds, see `/packages/db/src/seed.ts`.
-
+I keep coming back to the same class of problem: a mission that depends on data arriving correctly
+from systems I do not control. This repository is the smallest complete example of how I work on it.
+Start with the canonical model, put the vendor mess in one testable layer, refuse to write through a
+record you cannot vouch for, and measure the thing that actually moves.

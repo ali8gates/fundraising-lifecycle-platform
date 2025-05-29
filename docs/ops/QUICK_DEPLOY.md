@@ -4,12 +4,12 @@
 
 ### 1. Push to GitHub (5 min)
 ```bash
-cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
+cd /Users/ali8gates/Documents/PythonProjects/fundraising-lifecycle-platform
 git init  # if not already done
 git add .
 git commit -m "Ready for Vercel deployment"
 # Create repo on GitHub, then:
-git remote add origin https://github.com/YOUR_USERNAME/chti-innovators-network.git
+git remote add origin https://github.com/YOUR_USERNAME/fundraising-lifecycle-platform.git
 git push -u origin main
 ```
 
@@ -42,7 +42,7 @@ git push -u origin main
 After first deploy, run locally:
 ```bash
 export DATABASE_URL="your_production_database_url"
-cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
+cd /Users/ali8gates/Documents/PythonProjects/fundraising-lifecycle-platform
 pnpm --filter @chti/db prisma migrate deploy
 pnpm --filter @chti/db prisma db seed
 ```

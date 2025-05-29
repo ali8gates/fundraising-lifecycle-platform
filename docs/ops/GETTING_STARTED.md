@@ -1,4 +1,4 @@
-# Start here — CHTI Business Scouting Tool setup
+# Start here, Fundraising Lifecycle Platform setup
 
 This guide is in your project folder. Look for **GETTING_STARTED.md** in the main project folder (the same folder that has `package.json`, `apps/`, and `packages/`).
 
@@ -8,13 +8,13 @@ This guide is in your project folder. Look for **GETTING_STARTED.md** in the mai
 
 - **In your editor:** open a new terminal. If you’re not already in the project, run:
   ```bash
-  cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
+  cd /Users/ali8gates/Documents/PythonProjects/fundraising-lifecycle-platform
   ```
-- You should see a path ending in `chti-innovators-network`. That’s the **repo root**. All commands below are run from here.
+- You should see a path ending in `fundraising-lifecycle-platform`. That’s the **repo root**. All commands below are run from here.
 
 ---
 
-## 2. First time only — install and set up the database
+## 2. First time only, install and set up the database
 
 Run these one after another (copy-paste each block, press Enter, wait for it to finish):
 
@@ -24,7 +24,7 @@ pnpm install
 ```
 
 **Create the database** (only if you don’t have it yet).  
-If `pnpm --filter @chti/db prisma migrate deploy` (below) already works, the database exists — **skip this step**.
+If `pnpm --filter @chti/db prisma migrate deploy` (below) already works, the database exists, **skip this step**.
 
 - If PostgreSQL is installed via Homebrew, you may need to add it to your PATH, then run: `createdb chti`
 - Or create the database using a GUI (e.g. Postico, pgAdmin) or `psql -U your_username -c "CREATE DATABASE chti;"`
@@ -110,7 +110,7 @@ Do a hard refresh in the browser: **Cmd+Shift+R** (Mac) or **Ctrl+Shift+R** (Win
 | Apply DB/code updates   | `pnpm apply-updates` then `pnpm dev` |
 | Open the app in browser | http://localhost:3001 or http://127.0.0.1:3001 |
 
-**Repo root** = the folder that contains `package.json`, `apps/`, and `packages/` (e.g. `chti-innovators-network`). Don’t run these commands from inside `packages/db` or `apps/web`.
+**Repo root** = the folder that contains `package.json`, `apps/`, and `packages/` (e.g. `fundraising-lifecycle-platform`). Don’t run these commands from inside `packages/db` or `apps/web`.
 
 ---
 
@@ -119,7 +119,7 @@ Do a hard refresh in the browser: **Cmd+Shift+R** (Mac) or **Ctrl+Shift+R** (Win
 The database is missing some columns. Apply all migrations from the **repo root**:
 
 ```bash
-cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
+cd /Users/ali8gates/Documents/PythonProjects/fundraising-lifecycle-platform
 pnpm --filter @chti/db prisma migrate deploy
 ```
 

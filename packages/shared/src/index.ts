@@ -13,4 +13,8 @@ export type {
   ExtractedCriteria,
 } from './fit';
 export * from './linkedin';
-
+export * from './lifecycle';
+export * from './crm/canonical';
+export * from './crm/mapping';
+export * from './crm/household';
+export * from './crm/reconcile';

@@ -2,7 +2,7 @@
 
 This guide will help you configure the GTM (Go-To-Market) services for production use.
 
-**Pilot testing tonight?** See **[LAUNCH_TONIGHT.md](./LAUNCH_TONIGHT.md)** for a short checklist (copy `.env`, add 2–3 free API keys, run web + worker, verify at /settings).
+**Pilot testing tonight?** See **[LAUNCH_TONIGHT.md](./LAUNCH_TONIGHT.md)** for a short checklist (copy `.env`, add 2 to 3 free API keys, run web + worker, verify at /settings).
 
 ## ✅ What's Already Done
 
@@ -68,7 +68,7 @@ After adding the API keys, you need to restart the worker to activate them:
 pkill -f "next dev" || pkill -f "ts-node"
 
 # Restart everything
-cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
+cd /Users/ali8gates/Documents/PythonProjects/fundraising-lifecycle-platform
 pnpm dev
 ```
 
@@ -93,7 +93,7 @@ You can manually trigger the enrichment pipeline to test immediately:
 
 ```bash
 # In a new terminal, navigate to the project
-cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
+cd /Users/ali8gates/Documents/PythonProjects/fundraising-lifecycle-platform
 
 # Run the worker directly to see logs
 pnpm --filter @chti/worker dev

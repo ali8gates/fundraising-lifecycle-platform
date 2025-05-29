@@ -1,20 +1,20 @@
 # Vercel Deployment Steps
 
-*Save for later – quick reference for deploying chti-innovators-network to Vercel.*
+*Save for later, quick reference for deploying fundraising-lifecycle-platform to Vercel.*
 
 ---
 
 ## 1. Push Code to GitHub
 
 ```bash
-cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
+cd /Users/ali8gates/Documents/PythonProjects/fundraising-lifecycle-platform
 
 git add .
 git commit -m "Vercel deployment setup"
 git push origin main
 ```
 
-*(If the repo is new: create it on GitHub first, then `git remote add origin https://github.com/ali8gates/chti-innovators-network.git` and push.)*
+*(If the repo is new: create it on GitHub first, then `git remote add origin https://github.com/ali8gates/fundraising-lifecycle-platform.git` and push.)*
 
 ---
 
@@ -30,7 +30,7 @@ git push origin main
 ## 3. Create the Vercel Project
 
 1. Go to [vercel.com](https://vercel.com) → **Add New** → **Project**
-2. **Import** your `chti-innovators-network` (or `ali8gates/chti-innovators-network`) repo
+2. **Import** your `fundraising-lifecycle-platform` (or `ali8gates/fundraising-lifecycle-platform`) repo
 
 ---
 
@@ -71,7 +71,7 @@ In the project setup (or later: **Settings → Environment Variables**), add:
 From your machine (use your **production** `DATABASE_URL`):
 
 ```bash
-cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
+cd /Users/ali8gates/Documents/PythonProjects/fundraising-lifecycle-platform
 
 export DATABASE_URL="your_production_postgres_url"
 pnpm --filter @chti/db prisma migrate deploy
@@ -84,7 +84,7 @@ pnpm --filter @chti/db prisma db seed   # optional
 
 For background jobs, deploy the worker (e.g. on **Railway**):
 
-1. Railway → **New** → **GitHub Repo** → select `chti-innovators-network`
+1. Railway → **New** → **GitHub Repo** → select `fundraising-lifecycle-platform`
 2. **Root Directory**: `apps/worker`
 3. **Start Command**: `cd ../.. && pnpm install && pnpm --filter @chti/worker start`
 4. Add the **same** env vars: `DATABASE_URL`, `REDIS_URL`, `INGEST_INTERVAL_MINS`, etc.

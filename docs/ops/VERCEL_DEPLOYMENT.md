@@ -1,6 +1,6 @@
 # Vercel Deployment Guide
 
-This guide will help you deploy the CHTI Business Scouting Tool to Vercel for production.
+This guide will help you deploy the Fundraising Lifecycle Platform to Vercel for production.
 
 ## 🏗️ Architecture Overview
 
@@ -23,15 +23,15 @@ When deploying to Vercel, you'll need to set up:
 If you haven't already, push your code to GitHub:
 
 ```bash
-cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
+cd /Users/ali8gates/Documents/PythonProjects/fundraising-lifecycle-platform
 
 # Initialize git if needed
 git init
 git add .
-git commit -m "Initial commit - CHTI Business Scouting Tool"
+git commit -m "Initial commit - Fundraising Lifecycle Platform"
 
 # Create a new repo on GitHub, then:
-git remote add origin https://github.com/YOUR_USERNAME/chti-innovators-network.git
+git remote add origin https://github.com/YOUR_USERNAME/fundraising-lifecycle-platform.git
 git branch -M main
 git push -u origin main
 ```
@@ -89,10 +89,10 @@ redis://default:password@usw1-xxx.upstash.io:6379
 
 1. **Go to [vercel.com](https://vercel.com)** and sign in
 2. Click **"Add New"** → **"Project"**
-3. **Import your GitHub repository** (chti-innovators-network)
+3. **Import your GitHub repository** (fundraising-lifecycle-platform)
 4. **Configure the project:**
    - **Framework Preset**: Next.js (auto-detected)
-   - **Root Directory**: `apps/web` **(required – build will fail otherwise)**
+   - **Root Directory**: `apps/web` **(required, build will fail otherwise)**
    - **Build Command**: `cd ../.. && pnpm --filter @chti/db prisma generate && pnpm --filter @chti/web build`
    - **Output Directory**: `.next` (must be `.next` when Root is `apps/web`, not `apps/web/.next`)
    - **Install Command**: `cd ../.. && pnpm install`
@@ -120,7 +120,7 @@ npm i -g vercel
 vercel login
 
 # Deploy (from project root)
-cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
+cd /Users/ali8gates/Documents/PythonProjects/fundraising-lifecycle-platform
 vercel
 
 # Follow prompts:
@@ -148,7 +148,7 @@ cd ../.. && pnpm install && pnpm --filter @chti/db prisma generate && pnpm --fil
 export DATABASE_URL="your_production_database_url"
 
 # Run migrations
-cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network
+cd /Users/ali8gates/Documents/PythonProjects/fundraising-lifecycle-platform
 pnpm --filter @chti/db prisma migrate deploy
 
 # Seed initial data (optional)

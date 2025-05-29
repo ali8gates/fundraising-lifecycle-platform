@@ -1,6 +1,6 @@
 # Data Sources Guide
 
-This guide explains all data connectors integrated into the CHTI Business Scouting Tool pilot. Each source is wired into the enrichment pipeline and runs on the configured interval (default 30 minutes).
+This guide explains all data connectors integrated into the Fundraising Lifecycle Platform pilot. Each source is wired into the enrichment pipeline and runs on the configured interval (default 30 minutes).
 
 ---
 
@@ -35,7 +35,7 @@ curl -X POST http://localhost:3000/api/connectors \
 - **Legacy**: S-1 IPO filings for healthcare companies via browse-edgar.
 - **data.sec.gov**: Real-time JSON API for 10-K, 8-K, S-1 filings; company tickers filtered for healthcare/biotech. Same-day filings as submitted.
 
-**No setup required** – both run in the enrichment pipeline.
+**No setup required**, both run in the enrichment pipeline.
 
 ### 3. OpenFDA (Enforcement & Device Recalls)
 **Status**: ✅ Enabled by default  
@@ -61,7 +61,7 @@ Useful for regulatory/safety signals impacting healthcare companies.
 3. Restart worker
 
 ### 5. OpenCorporates API
-**Env**: `OPENCORPORATES_API_KEY` (optional – works without key at lower limits)  
+**Env**: `OPENCORPORATES_API_KEY` (optional, works without key at lower limits)  
 **Cost**: Free tier; API key increases rate limits  
 **Data**: ~200M companies worldwide; company registry (names, addresses, hierarchy). Open data, share-alike licensing. Good for company lookups and verifying entities.
 
@@ -154,9 +154,9 @@ All other sources (RSS, SEC EDGAR, OpenFDA) run without keys.
 
 ## Monitoring
 
-- **Settings page**: http://localhost:3000/settings – shows which API keys are configured and data source status.
+- **Settings page**: http://localhost:3000/settings, shows which API keys are configured and data source status.
 - **Worker logs**: Run `pnpm --filter @chti/worker dev` and look for lines like `Crunchbase: fetched N companies`, `SEC EDGAR (data.sec.gov): fetched N filings`, etc.
-- **Companies/signals**: http://localhost:3000/companies – new signals appear as they are ingested.
+- **Companies/signals**: http://localhost:3000/companies, new signals appear as they are ingested.
 
 ## Specialty Auto-Classification
 
