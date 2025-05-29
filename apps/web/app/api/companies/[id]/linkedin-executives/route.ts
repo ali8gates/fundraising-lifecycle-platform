@@ -157,8 +157,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({
         success: true,
         executives: clearbitData.slice(0, 5),
-        source: 'clearbit',
-      } as LinkedInExecutivesResponse);
+        source: 'live',
+      } satisfies LinkedInExecutivesResponse);
     }
 
     // Fallback to mock data
