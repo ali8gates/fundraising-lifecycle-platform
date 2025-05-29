@@ -1,0 +1,21 @@
+{
+  "name": "chti-innovators-network",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm --filter @chti/web dev",
+    "dev:all": "pnpm -r --parallel dev",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "prisma:migrate": "pnpm --filter @chti/db prisma migrate dev",
+    "prisma:seed": "pnpm --filter @chti/db prisma db seed"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}
+
