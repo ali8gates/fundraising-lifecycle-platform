@@ -11,6 +11,9 @@ deployed. The write up below covers the approach, the tradeoffs, the code, and t
 This repository is a working monorepo, not a deck. The product documents point at the files that
 implement them.
 
+If you only have a few minutes: read "The unmet need," "What I built," and "Outcomes" below. Everything
+else is integration detail and the code behind it.
+
 ## Where I was sitting when I built this
 
 Context matters for this one, because the reason I could build it at all was where I sat.

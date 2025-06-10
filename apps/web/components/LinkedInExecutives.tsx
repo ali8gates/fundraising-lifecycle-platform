@@ -55,7 +55,7 @@ export function LinkedInExecutives({ companyId }: LinkedInExecutivesProps) {
           </div>
         ))}
         <div className="text-xs text-slate-400 pt-2 mt-2 border-t">
-          Pulled from LinkedIn Sales Navigator
+          Pulled from company enrichment data (Clearbit)
         </div>
       </div>
     </div>
