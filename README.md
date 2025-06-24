@@ -181,6 +181,7 @@ Setup and deployment notes are in [docs/ops/](docs/ops/).
 | File | Contents |
 | --- | --- |
 | [docs/case-study.md](docs/case-study.md) | The 0 to 1 account: the questions I asked, the tradeoffs I made, what I cut, how I worked with engineering and the fundraising teams |
+| [docs/how-i-lead-an-engagement.md](docs/how-i-lead-an-engagement.md) | How I build trust, hear the need behind the ask, flag problems early, avoid over-promising, and set the team up to own their part |
 | [docs/integration-reliability.md](docs/integration-reliability.md) | The donor CRM failure catalogue, the guard layer, monitoring, and what I would build first now |
 | [docs/lifecycle-model.md](docs/lifecycle-model.md) | The five stages, stage by stage, mapped to the schema and the code |
 | [docs/functional-requirements.md](docs/functional-requirements.md) | Numbered requirements with acceptance criteria and the file that satisfies each one |
