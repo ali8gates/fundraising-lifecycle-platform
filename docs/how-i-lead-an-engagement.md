@@ -2,6 +2,16 @@
 
 The fundraising and school teams were my customers on this build. These are the habits that got it from a first conversation to a deployed product in about sixty days, with what each looked like here.
 
+## The hats I wore
+
+I led the technical side of this build and worked across several roles to get it live in about sixty days.
+
+- **Discovery lead.** Mapped the fundraising teams, the donor data team, school advancement staff, and engineering, and what each needed.
+- **Product owner.** Made the calls that shaped adoption, like building the record before the dashboard and showing reasons instead of a score.
+- **Data and integration lead.** Worked inside the CRM and designed the mapping layer and review queue with the donor data team.
+- **Hands on engineer.** Wrote the schema, the criteria engine, and the mapping layer, plus the tests for the parts I expected to break.
+- **Rollout lead.** Ran weekly sessions on the real product and took it to roughly fourteen schools.
+
 ## Earning trust early and finding who matters
 
 In the first weeks I mapped four groups: regional fundraising staff and initiative owners, the donor data and CRM team who owned the record of truth, school advancement staff who were often one or two people, and engineering. The group most likely to block the work was the donor data team, and they were right to be cautious. I brought them in before the write path existed, agreed the review rule with them in advance, and gave them the reconciliation counts as their own report. They became the reason the program was allowed to grow.
