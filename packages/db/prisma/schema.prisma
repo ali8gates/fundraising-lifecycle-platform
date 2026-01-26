@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SourceType {
+  news
+  social
+  funding
+  site
+}
+
+enum Stage {
+  NEW
+  QUALIFIED
+  OUTREACH
+  MEETING_SCHEDULED
+  IN_DISCUSSION
+  MEMBER
+  ARCHIVED
+}
+
+enum FundingStage {
+  PRE_SEED
+  SEED
+  SERIES_A
+  SERIES_B
+  SERIES_C
+  GROWTH
+  OTHER
+}
+
+enum OutreachChannel {
+  email
+  linkedin
+  call
+}
+
+enum OutreachOutcome {
+  pending
+  sent
+  responded
+  no_reply
+  declined
+}
+
+enum ConnectorType {
+  rss
+  html
+}
+
+enum UserRole {
+  admin
+  viewer
+}
+
+enum ProgramFit {
+  strong
+  possible
+  not_fit
+  unknown
+}
+
+model Company {
+  id             String        @id @default(cuid())
+  name           String
+  website        String?
+  logoUrl        String?       // Logo URL (from Crunchbase, company website, etc.)
+  description    String?
+  headquarters   String?
+  foundedYear    Int?
+  specialties    String[]
+  fundingStage   FundingStage? @default(OTHER)
+  fundingAmount  Float?        // Latest funding round (millions)
+  revenueAmount  Float?        // Last fiscal year revenue (millions)
+  totalScore     Float          @default(0)
+  stage          Stage          @default(NEW)
+  ownerUserId    String?
+  owner          User?          @relation(name: "OwnerCompanies", fields: [ownerUserId], references: [id])
+  innovatorsNetworkFit ProgramFit @default(unknown)
+  aiAssessmentLabFit   ProgramFit @default(unknown)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  signals        Signal[]
+  scores         ScoreSnapshot[]
+  outreachEvents OutreachEvent[]
+  meetings       Meeting[]
+}
+
+model Signal {
+  id           String      @id @default(cuid())
+  companyId    String?
+  company      Company?    @relation(fields: [companyId], references: [id])
+  sourceName   String
+  sourceType   SourceType
+  title        String
+  url          String       @unique
+  summary      String?
+  publishedAt  DateTime?
+  raw          Json
+  createdAt    DateTime     @default(now())
+}
+
+model ScoreSnapshot {
+  id               String   @id @default(cuid())
+  companyId        String
+  company          Company  @relation(fields: [companyId], references: [id])
+  aiSophistication Float
+  marketPotential  Float
+  funding          Float
+  team             Float
+  regulatory       Float
+  total            Float
+  weights          Json
+  createdAt        DateTime @default(now())
+}
+
+model OutreachEvent {
+  id        String          @id @default(cuid())
+  companyId String
+  company   Company         @relation(fields: [companyId], references: [id])
+  channel   OutreachChannel
+  note      String?
+  outcome   OutreachOutcome @default(pending)
+  createdAt DateTime        @default(now())
+}
+
+model Meeting {
+  id         String   @id @default(cuid())
+  companyId  String
+  company    Company  @relation(fields: [companyId], references: [id])
+  startsAt   DateTime
+  endsAt     DateTime
+  location   String?
+  inviteLink String?
+  createdAt  DateTime @default(now())
+}
+
+model Connector {
+  id           String        @id @default(cuid())
+  name         String
+  type         ConnectorType
+  config       Json
+  isEnabled    Boolean       @default(true)
+  intervalMins Int           @default(60)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model User {
+  id             String   @id @default(cuid())
+  name           String?
+  email          String   @unique
+  role           UserRole @default(viewer)
+  hashedPassword String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  companies      Company[] @relation(name: "OwnerCompanies")
+}
+
+/// App-wide configuration for scoring weights and thresholds
+model AppConfig {
+  id        Int      @id @default(1)
+  weights   Json
+  thresholds Json
+  updatedAt DateTime @updatedAt
+}
+

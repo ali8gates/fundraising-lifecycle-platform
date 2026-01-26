@@ -1,0 +1,32 @@
+{
+  "name": "@chti/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "echo 'DB package has no dev server'",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prisma": "prisma",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "seed": "ts-node src/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "5.20.0",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "prisma": "5.20.0",
+    "typescript": "5.4.5",
+    "ts-node": "10.9.2",
+    "eslint": "8.57.0"
+  },
+  "prisma": {
+    "seed": "ts-node src/seed.ts"
+  }
+}
+
