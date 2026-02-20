@@ -1,5 +1,7 @@
 # CHTI: AI Innovators Network Scouting Tool (MVP)
 
+**New here?** → See **[GETTING_STARTED.md](./GETTING_STARTED.md)** for step-by-step setup and where to run commands.
+
 An MVP platform for AHA's Innovators Network to ingest public healthcare startup signals, auto-categorize by specialty, score and gate candidates, and support outreach + meeting booking + pipeline tracking.
 
 ## Tech
@@ -41,6 +43,24 @@ An MVP platform for AHA's Innovators Network to ingest public healthcare startup
 
 The enrichment pipeline (in `apps/worker/src/jobs/enrichmentPipeline.ts`) runs every 30 mins (configurable via `INGEST_INTERVAL_MINS`).
 
+## Basic steps
+
+**First-time setup (once per machine)**  
+1. Start PostgreSQL and Redis (e.g. `brew services start postgresql@16 redis` and `createdb chti`).  
+2. From the **repo root**: `pnpm install` → `pnpm --filter @chti/db prisma migrate deploy` → `pnpm --filter @chti/db exec prisma generate` → `pnpm prisma:seed` (optional).  
+3. Copy `.env.example` to `.env` and set `DATABASE_URL`, `REDIS_URL`, `APP_BASE_URL`.
+
+**Run the app (daily)**  
+1. From the **repo root**: `pnpm dev`.  
+2. Open **http://localhost:3001**.
+
+**After pulling new code (migrations or schema changes)**  
+1. From the **repo root**: `pnpm apply-updates` (or `prisma migrate deploy` + `prisma generate` in `@chti/db`).  
+2. Restart the dev server (Ctrl+C, then `pnpm dev`).  
+3. Hard-refresh the browser (Cmd+Shift+R or Ctrl+Shift+R).
+
+---
+
 ## Quick Start
 
 ### Easy Launch (Recommended)
@@ -81,6 +101,33 @@ pnpm dev
 ```
 
 Then open: **http://localhost:3001**
+
+### Seeing code/DB updates on localhost
+If you pulled new code (e.g. AI Assessment Lab badges, enriched web text) and don’t see changes:
+
+1. **Apply DB migrations and regenerate Prisma client** — run from the **repo root** (not from `packages/db`):
+   ```bash
+   cd /path/to/chti-innovators-network   # repo root
+   pnpm apply-updates
+   ```
+   Or manually (from repo root):
+   ```bash
+   pnpm --filter @chti/db prisma migrate deploy
+   pnpm --filter @chti/db exec prisma generate
+   ```
+
+2. **Restart the dev server**  
+   Stop the running `pnpm dev` (Ctrl+C), then start it again:
+   ```bash
+   pnpm dev
+   ```
+
+3. **(Optional) Re-classify existing companies** (scrape websites and recompute fit):
+   ```bash
+   pnpm --filter @chti/worker exec tsx src/scripts/backfillFit.ts
+   ```
+
+Then hard-refresh the app (e.g. Cmd+Shift+R or Ctrl+Shift+R) or open **http://localhost:3001/companies** again.
 
 ### Docker
 ```bash

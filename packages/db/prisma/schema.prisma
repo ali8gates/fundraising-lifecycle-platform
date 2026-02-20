@@ -17,7 +17,6 @@ enum SourceType {
 enum Stage {
   NEW
   QUALIFIED
-  OUTREACH
   MEETING_SCHEDULED
   IN_DISCUSSION
   MEMBER
@@ -83,6 +82,14 @@ model Company {
   owner          User?          @relation(name: "OwnerCompanies", fields: [ownerUserId], references: [id])
   innovatorsNetworkFit ProgramFit @default(unknown)
   aiAssessmentLabFit   ProgramFit @default(unknown)
+  // New fit results (tier + reasons; no score in UI)
+  innovatorsNetworkTier     String?   // INNOVATOR | INTEGRATOR | BOTH | NEITHER
+  innovatorsNetworkReasons  Json?     // string[]
+  assessmentLabEligible      Boolean?
+  assessmentLabReasons      Json?     // string[]
+  assessmentLabCriteria     Json?     // { deviceType, therapeuticAreas[], modalities[], groundTruthSources[] }
+  overallRecommendation     String?  // INNOVATORS_NETWORK | AI_ASSESSMENT_LAB | BOTH | NEITHER
+  enrichedWebText           String?    // Scraped homepage + /product, /solutions, /about for fit classification
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 

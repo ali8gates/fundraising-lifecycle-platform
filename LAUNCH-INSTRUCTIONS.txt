@@ -1,0 +1,37 @@
+AI INNOVATORS NETWORK – HOW TO LAUNCH THE DEMO
+==============================================
+
+The app cannot start from Cursor’s built-in terminal (port permission).
+Use one of these methods:
+
+METHOD 1 – Double-click (easiest)
+---------------------------------
+1. In Finder, go to: Documents → PythonProjects → chti-innovators-network
+2. Double-click: START-DEMO.command
+3. A Terminal window will open and start the app.
+4. When you see “Ready” or “started”, open in your browser: http://localhost:3000
+5. If macOS says the file is from an unidentified developer: right-click START-DEMO.command → Open → Open
+
+METHOD 2 – Terminal
+-------------------
+1. Open the Terminal app (Spotlight: type “Terminal”).
+2. Paste and press Enter:
+
+   cd /Users/ali8gates/Documents/PythonProjects/chti-innovators-network && ./launch.sh
+
+3. When the server is ready, open in your browser: http://localhost:3000
+
+IF THE DATABASE ERROR APPEARS
+-----------------------------
+Start PostgreSQL and create the database, then run the launch again:
+
+   brew services start postgresql@16
+   createdb chti
+   ./launch.sh
+
+(Use postgresql@15 if you don’t have 16.)
+
+QUICK CHECK
+-----------
+Once the app is running, you can check: http://localhost:3000/api/health
+You should see: {"ok":true,"message":"AI Innovators Network is running"}

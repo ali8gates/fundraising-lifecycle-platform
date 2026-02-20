@@ -4,22 +4,25 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --loader ts-node/esm src/index.ts",
+    "dev": "tsx src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "backfill-fit": "tsx src/scripts/backfillFit.ts"
   },
   "dependencies": {
     "@chti/db": "workspace:*",
     "@chti/shared": "workspace:*",
     "bullmq": "5.8.3",
     "ioredis": "5.3.2",
+    "dotenv": "16.4.5",
     "rss-parser": "3.13.0",
     "undici": "6.19.8"
   },
   "devDependencies": {
     "typescript": "5.4.5",
     "ts-node": "10.9.2",
+    "tsx": "4.19.2",
     "vitest": "1.6.0"
   }
 }

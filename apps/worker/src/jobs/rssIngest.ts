@@ -1,5 +1,5 @@
 import { prisma } from '@chti/db';
-import { fetchRssSignals } from '../connectors/rss';
+import { fetchRssSignals } from '../connectors/rss.js';
 import { classifySpecialties } from '@chti/shared';
 
 export async function runRssIngest() {

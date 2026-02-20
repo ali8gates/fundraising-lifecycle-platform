@@ -1,181 +1,163 @@
 # Data Sources Guide
 
-This guide explains how to set up and use the various data connectors in CHTI.
+This guide explains all data connectors integrated into the CHTI Innovators Network pilot. Each source is wired into the enrichment pipeline and runs on the configured interval (default 30 minutes).
+
+---
 
 ## Free Data Sources (Always Available)
 
 ### 1. RSS/Atom Feeds
 **Status**: ✅ Enabled by default  
-**Interval**: 30 minutes (configurable)  
-**Countries**: Global
+**Interval**: Configurable per feed (default 120 mins in seed)  
+**No API key required**
 
-10 healthcare news feeds are pre-seeded:
-- MedCity News
-- MobiHealthNews
-- FierceHealthcare
-- Rock Health
-- CB Insights Health
-- FDA Press Releases
-- NIH News Releases
-- HealthTech Magazine
-- HIT Consultant
-- Crunchbase News
+Pre-seeded feeds include:
+- **Healthcare**: MedCity News, MobiHealthNews, FierceHealthcare, FierceBiotech, Rock Health, CB Insights Health, FDA Press Releases, NIH News Releases, HealthTech Magazine, HIT Consultant
+- **Startups / funding**: Crunchbase News, TechCrunch, VentureBeat, FinSMEs
 
-**Add a custom feed**:
+**Add a custom feed** (admin API):
 ```bash
-curl -X POST http://localhost:3001/api/connectors \
+curl -X POST http://localhost:3000/api/connectors \
   -H "Content-Type: application/json" \
   -H "x-admin-key: your-admin-key" \
   -d '{
-    "name": "Custom Healthcare Feed",
+    "name": "Custom Feed",
     "type": "rss",
     "config": { "url": "https://example.com/feed.xml" },
     "intervalMins": 60
   }'
 ```
 
-### 2. SEC EDGAR (IPO Filings)
+### 2. SEC EDGAR (Legacy + data.sec.gov JSON)
 **Status**: ✅ Enabled by default  
-**Type**: S-1 IPO filings for healthcare companies  
-**Interval**: 30 minutes
+**No API key required**
 
-Automatically searches SEC EDGAR for S-1 filings from healthcare and medical device companies. Links to actual SEC filings.
+- **Legacy**: S-1 IPO filings for healthcare companies via browse-edgar.
+- **data.sec.gov**: Real-time JSON API for 10-K, 8-K, S-1 filings; company tickers filtered for healthcare/biotech. Same-day filings as submitted.
 
-**No setup required** – runs as part of enrichment pipeline.
+**No setup required** – both run in the enrichment pipeline.
 
-## Optional Paid APIs
+### 3. OpenFDA (Enforcement & Device Recalls)
+**Status**: ✅ Enabled by default  
+**No API key required**
 
-### 1. Crunchbase API
-**Cost**: Paid tier required  
-**Data**: ~100M companies, funding rounds, news, founders  
-**Industries Covered**: healthcare, medtech, digital-health, biotech  
-**Rate Limit**: Varies by tier
+- **Enforcement Reports API**: Weekly recall data by product and firm (food/drug).
+- **Device Recalls**: Medical device recalls.
 
-**Setup**:
-1. Sign up at [https://about.crunchbase.com/products/crunchbase-api/](https://about.crunchbase.com/products/crunchbase-api/)
-2. Get your API key from dashboard
-3. Add to `.env`:
-   ```bash
-   CRUNCHBASE_API_KEY=your_key_here
-   ```
-4. Restart worker:
-   ```bash
-   pkill -f "ts-node src/index.ts"
-   pnpm --filter @chti/worker dev
-   ```
-
-**What it fetches**:
-- Company profiles, descriptions, websites
-- Funding stage and last funding date
-- Relevant healthcare/biotech industries
-
-**Interval**: 30 minutes
+Useful for regulatory/safety signals impacting healthcare companies.
 
 ---
 
-### 2. AngelList API
-**Cost**: Free with rate limits; paid for higher volume  
-**Data**: Startups, investors, deals  
-**Industries Covered**: All sectors (we filter for healthcare keywords)  
+## Optional APIs (Set in `.env` to Enable)
+
+### 4. Crunchbase API (Basic)
+**Env**: `CRUNCHBASE_API_KEY`  
+**Cost**: Basic (free) tier with limited monthly requests  
+**Data**: Funding rounds, company info, investor tracking; healthcare startup funding signals (Series A, etc.)
 
 **Setup**:
-1. Sign up at [https://angel.co](https://angel.co)
-2. Register for API access (settings → developer)
-3. Add to `.env`:
-   ```bash
-   ANGELLIST_API_KEY=your_token_here
-   ```
-4. Restart worker
+1. Sign up at [Crunchbase API](https://about.crunchbase.com/products/crunchbase-api/)
+2. Add to `.env`: `CRUNCHBASE_API_KEY=your_key_here`
+3. Restart worker
 
-**What it fetches**:
-- Startup profiles, taglines, founding dates
-- Company URLs and AngelList profiles
-- Funding signals and investor activity
+### 5. OpenCorporates API
+**Env**: `OPENCORPORATES_API_KEY` (optional – works without key at lower limits)  
+**Cost**: Free tier; API key increases rate limits  
+**Data**: ~200M companies worldwide; company registry (names, addresses, hierarchy). Open data, share-alike licensing. Good for company lookups and verifying entities.
 
-**Interval**: 30 minutes
+**Setup**: Add `OPENCORPORATES_API_KEY=...` to `.env` for higher limits. Pipeline runs with or without key.
+
+### 6. Alpha Vantage (Free Tier)
+**Env**: `ALPHA_VANTAGE_API_KEY`  
+**Cost**: Free tier ~25 requests/day, 5/min  
+**Data**: Stock/market data, fundamentals, AI-powered market news sentiment. Used for public healthcare company tickers (e.g. IBB, XBI, HTEC) and related news.
+
+**Setup**:
+1. Get key at [Alpha Vantage](https://www.alphavantage.co/support/#api-key)
+2. Add to `.env`: `ALPHA_VANTAGE_API_KEY=your_key`
+
+### 7. Marketaux (News API)
+**Env**: `MARKETAUX_API_KEY`  
+**Cost**: Free 100 requests/day, 3 articles per query  
+**Data**: Global stock market and financial news; press releases and news about healthcare companies and markets.
+
+**Setup**: Get key at [Marketaux](https://www.marketaux.com/), add `MARKETAUX_API_KEY=...` to `.env`.
+
+### 8. NewsAPI.org (Dev Tier)
+**Env**: `NEWSAPI_API_KEY`  
+**Cost**: Free 100 requests/day (development only; no production)  
+**Data**: General news search across ~150,000 sources; headlines up to 1 month. Keywords: healthtech, digital health, biotech, company names.
+
+**Setup**: Get key at [NewsAPI.org](https://newsapi.org/), add `NEWSAPI_API_KEY=...` to `.env`.
+
+### 9. NewsData.io (Free Tier)
+**Env**: `NEWSDATA_API_KEY`  
+**Cost**: Free 200 requests/day, 10 articles per call  
+**Data**: Global news with sentiment and multilingual support. Backup/supplement to NewsAPI for startups and biotech news.
+
+**Setup**: Get key at [NewsData.io](https://newsdata.io/), add `NEWSDATA_API_KEY=...` to `.env`.
+
+### 10. AngelList API
+**Env**: `ANGELLIST_API_KEY`  
+**Cost**: Free with rate limits  
+**Data**: Startups, investors, deals; we filter for healthcare keywords.
+
+**Setup**: Register at [AngelList](https://angel.co) (settings → developer), add `ANGELLIST_API_KEY=...` to `.env`.
 
 ---
 
-## How Data Flows Through the System
+## How Data Flows
 
 ```
-RSS/Crunchbase/AngelList/SEC
+RSS / Crunchbase / AngelList / OpenCorporates / Alpha Vantage /
+Marketaux / NewsAPI / NewsData / SEC EDGAR / OpenFDA
          ↓
-   Worker Pipeline (every 30 mins)
+   Worker pipeline (every INGEST_INTERVAL_MINS)
          ↓
-   Parse & Normalize to Signal
+   Parse & normalize to Signal
          ↓
    Extract domain → find or create Company
          ↓
-   Auto-classify specialties (keywords + TF-IDF)
+   Auto-classify specialties (keywords)
          ↓
-   Store in DB
-         ↓
-   Dashboard shows new signals & companies
+   Store in DB → Dashboard
 ```
+
+## Env Summary
+
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `CRUNCHBASE_API_KEY` | No | Crunchbase company/funding data |
+| `ANGELLIST_API_KEY` | No | AngelList startups |
+| `OPENCORPORATES_API_KEY` | No | OpenCorporates (optional for higher limits) |
+| `ALPHA_VANTAGE_API_KEY` | No | Alpha Vantage news/sentiment |
+| `MARKETAUX_API_KEY` | No | Marketaux financial news |
+| `NEWSAPI_API_KEY` | No | NewsAPI.org headlines |
+| `NEWSDATA_API_KEY` | No | NewsData.io news |
+
+All other sources (RSS, SEC EDGAR, OpenFDA) run without keys.
+
+## Rate Limits & Tips
+
+| Source | Free Tier | Tip |
+|--------|-----------|-----|
+| RSS | Unlimited | Add only feeds you need |
+| SEC / OpenFDA | No key | Safe to run every 30 min |
+| Crunchbase | By tier | Use for funding signals |
+| OpenCorporates | Optional key | Works without key |
+| Alpha Vantage | 25/day, 5/min | Use for sector news only |
+| Marketaux | 100/day | 3 articles per query |
+| NewsAPI | 100/day | Dev only |
+| NewsData | 200/day | 10 per call |
+
+**Recommendation**: Set `INGEST_INTERVAL_MINS=60` in production to stay within free tiers.
+
+## Monitoring
+
+- **Settings page**: http://localhost:3000/settings – shows which API keys are configured and data source status.
+- **Worker logs**: Run `pnpm --filter @chti/worker dev` and look for lines like `Crunchbase: fetched N companies`, `SEC EDGAR (data.sec.gov): fetched N filings`, etc.
+- **Companies/signals**: http://localhost:3000/companies – new signals appear as they are ingested.
 
 ## Specialty Auto-Classification
 
-When a signal is ingested, CHTI automatically classifies the company into one of these specialties:
-
-- **cardiovascular** – Keywords: cardio, heart, arrhythmia, hypertension, CVD, ECG, etc.
-- **diagnostics** – Keywords: diagnostic, imaging, assay, biomarker, lab, radiology, CT, MRI, etc.
-- **remote patient monitoring** – Keywords: RPM, remote monitoring, telemetry, wearable, telehealth, etc.
-- **other** – Default if no keywords match
-
-Specialties are stored as multi-label (up to 2 per signal).
-
-## Monitoring & Troubleshooting
-
-### Check enrichment logs
-```bash
-# If running worker in foreground
-pnpm --filter @chti/worker dev
-
-# Check logs for successful/failed enrichments
-# Look for: "Crunchbase: fetched X companies", "AngelList: fetched Y startups", etc.
-```
-
-### View ingested signals in UI
-1. Open http://localhost:3001/companies
-2. Check the "updated at" column – newest signals show recent ingestion time
-3. Click a company to see associated signals
-
-### Add/remove RSS feeds
-1. Go to http://localhost:3001/settings
-2. See "RSS/Atom Feeds" section
-3. Use API (shown above) to add custom feeds
-
-### Debug API key issues
-- **Crunchbase**: Ensure key has permission to access `/api/v4/searches/organizations`
-- **AngelList**: Check that token has access to `/v2/startups` endpoint
-- **Worker won't start?** Check `.env` is exported: `export $(grep -E '^[A-Z]' .env | xargs)`
-
-## Rate Limits & Best Practices
-
-| Source | Requests/Min | Recommended Interval |
-|--------|-------------|----------------------|
-| RSS    | Unlimited   | 30–120 mins          |
-| Crunchbase | 60/min | 30–60 mins           |
-| AngelList | 60/min  | 30–60 mins           |
-| SEC    | Unlimited   | 30–60 mins           |
-
-**Tip**: Set `INGEST_INTERVAL_MINS=60` for production to reduce API quota usage.
-
-## Future Enhancements
-
-- [ ] PitchBook API integration
-- [ ] Y Combinator startup feed
-- [ ] LinkedIn company pages scraping (with proper ToS compliance)
-- [ ] Email verification for companies
-- [ ] Duplicate detection & deduplication
-- [ ] Machine learning re-ranker for signal relevance
-
-
-
-
-
-
-
-
-
+Signals are auto-tagged with specialties: **cardiovascular**, **diagnostics**, **remote patient monitoring**, **other** (keyword-based).

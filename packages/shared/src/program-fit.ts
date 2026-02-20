@@ -26,8 +26,8 @@ export function computeInnovatorsNetworkFit(company: CompanyWithSignals): Progra
   // Strong fit: High score and good signal coverage
   if (score >= 0.75 && signalCount >= 3) return 'strong';
   
-  // Possible fit: Moderate score or emerging signals
-  if (score >= 0.50 && signalCount >= 1) return 'possible';
+  // Possible fit: Moderate score or at least one signal (so Program Fit column shows data)
+  if (score >= 0.40 && signalCount >= 1) return 'possible';
   
   // Not a fit: Low score and limited signals
   if (score < 0.30) return 'not_fit';
@@ -57,8 +57,8 @@ export function computeAiAssessmentLabFit(company: CompanyWithSignals): ProgramF
     return 'strong';
   }
   
-  // Possible fit: Outreach stage or moderate funding with some engagement
-  if (['OUTREACH', 'QUALIFIED'].includes(stage) || meetingCount > 0) {
+  // Possible fit: Qualified stage or moderate funding with some engagement
+  if (stage === 'QUALIFIED' || meetingCount > 0) {
     return 'possible';
   }
   

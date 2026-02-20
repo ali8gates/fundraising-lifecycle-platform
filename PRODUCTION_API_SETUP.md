@@ -2,11 +2,13 @@
 
 This guide will help you configure the GTM (Go-To-Market) services for production use.
 
+**Pilot testing tonight?** See **[LAUNCH_TONIGHT.md](./LAUNCH_TONIGHT.md)** for a short checklist (copy `.env`, add 2–3 free API keys, run web + worker, verify at /settings).
+
 ## ✅ What's Already Done
 
 - ✅ `.env` file structure updated with API key placeholders
 - ✅ Secure `ADMIN_API_KEY` generated for admin routes
-- ✅ `APP_BASE_URL` corrected to port 3001
+- ✅ `APP_BASE_URL` set to port 3000 (matches `launch.sh`)
 
 ## 🔑 Step 1: Get Your API Keys
 
@@ -72,7 +74,7 @@ pnpm dev
 
 ## ✅ Step 4: Verify Configuration
 
-1. **Open the Settings page**: http://localhost:3001/settings
+1. **Open the Settings page**: http://localhost:3000/settings
 2. **Check "External Data Sources" section**:
    - ✅ Crunchbase API should show "✓ Configured" (green)
    - ✅ AngelList API should show "✓ Configured" (green)
@@ -104,7 +106,7 @@ Watch for:
 
 ### Check the Dashboard
 
-1. Go to http://localhost:3001/companies
+1. Go to http://localhost:3000/companies
 2. New companies should appear from Crunchbase and AngelList
 3. Each company will have:
    - Auto-classified specialties
