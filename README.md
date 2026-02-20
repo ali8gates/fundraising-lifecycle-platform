@@ -1,4 +1,4 @@
-# CHTI: AI Innovators Network Scouting Tool (MVP)
+# CHTI Business Scouting Tool (MVP)
 
 **New here?** → See **[GETTING_STARTED.md](./GETTING_STARTED.md)** for step-by-step setup and where to run commands.
 
@@ -138,6 +138,31 @@ pnpm prisma:seed
 pnpm dev
 ```
 
+### Security layer (gate)
+On **localhost** and **production**, CHTI Business Scouting Tool shows a **gate page** first: visitors must enter a 7-digit access code before seeing Dashboard, Companies, or Settings. The gate is enforced by middleware; after a valid code, a cookie is set for 7 days.  
+- **Default code** (change in production): set `GATE_ACCESS_CODE` or `CHTI_GATE_CODE` in `.env` or your host’s env (e.g. Vercel).  
+- **Local:** Open **http://localhost:3001** or **http://127.0.0.1:3001** — you’ll be redirected to `/gate` until you enter the code.
+
+---
+
+## Push to production
+
+**Production URL:** **https://chti-scout.com** — Add the domain in Vercel (Project Settings → Domains) and point your DNS to Vercel; set `APP_BASE_URL=https://chti-scout.com` in production env.
+
+1. **Push your branch to GitHub** (from repo root):
+   ```bash
+   git add -A && git commit -m "Your message" && git push origin YOUR_BRANCH
+   ```
+
+2. **Deploy** (depends on your host):
+   - **Vercel:** Connect the repo at [vercel.com](https://vercel.com). Set **Root Directory** to the repo root; set **Framework Preset** to Next.js and **Application (app) directory** to `apps/web` if required. Add env vars (e.g. `DATABASE_URL`, `REDIS_URL`, `APP_BASE_URL`, `GATE_ACCESS_CODE`). Trigger a deploy from the dashboard or via `vercel --prod` from the repo root (if Vercel CLI is linked).
+   - **Other hosts:** Build with `pnpm build` (from root), then run the output (e.g. `pnpm --filter @chti/web start` from root after build). Set the same env vars and run DB migrations on the production DB.
+
+3. **Production env vars:** At least `DATABASE_URL`, `REDIS_URL`, `APP_BASE_URL` (your production URL). Set `GATE_ACCESS_CODE` to a secure 7-digit code so the security layer works in production.
+
+4. **Database:** Run migrations against the production DB once:  
+   `pnpm --filter @chti/db prisma migrate deploy` (with `DATABASE_URL` pointing at production).
+
 ## Acceptance Checklist (MVP)
 - ✓ Add RSS feeds in Settings; worker ingests and Signals appear.
 - ✓ New companies auto-created from novel domains with auto-classified specialties.
@@ -162,7 +187,7 @@ pnpm dev
 # Required
 DATABASE_URL=postgresql://user@localhost:5432/chti?schema=public
 REDIS_URL=redis://localhost:6379
-APP_BASE_URL=http://localhost:3001
+APP_BASE_URL=http://localhost:3001   # production: https://chti-scout.com
 
 # Admin
 ADMIN_API_KEY=replace-with-strong-random

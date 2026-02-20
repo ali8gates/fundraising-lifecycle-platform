@@ -3,10 +3,10 @@ import type { NextRequest } from 'next/server';
 
 const GATE_COOKIE = 'chti_access';
 
+/** Security layer: redirect to gate (access code) unless cookie is set or user is on /gate. */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow the gate page and static/API assets
   if (pathname === '/gate' || pathname.startsWith('/_next') || pathname.startsWith('/api')) {
     return NextResponse.next();
   }
@@ -19,5 +19,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/', '/((?!_next/static|_next/image|favicon.ico).*)'],
 };

@@ -1,4 +1,4 @@
-# AI Innovators Network Pilot – Step-by-Step Walkthrough
+# CHTI Business Scouting Tool Pilot – Step-by-Step Walkthrough
 
 Do these in order. After each step, check the "✓ Done?" before moving on.
 

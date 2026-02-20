@@ -1,4 +1,4 @@
-# AI Innovators Network Pilot – Resume Tomorrow
+# CHTI Business Scouting Tool Pilot – Resume Tomorrow
 
 **Where you left off:** You got the web app running and the database seeded. The worker was updated (BullMQ Redis option fixed, tsx for dev). You can pick up from here tomorrow.
 

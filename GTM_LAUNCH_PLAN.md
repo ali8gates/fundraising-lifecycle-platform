@@ -1,4 +1,4 @@
-# CHTI Innovators Network - Go-To-Market & Launch Plan
+# CHTI Business Scouting Tool - Go-To-Market & Launch Plan
 
 ## Go-To-Market Checklist
 

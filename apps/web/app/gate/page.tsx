@@ -26,11 +26,16 @@ export default function GatePage() {
   };
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center">
-      <div className="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-1 text-lg font-semibold text-slate-900">
-          CHTI: AI Innovators Network
+    <div className="flex min-h-screen flex-col bg-slate-100">
+      <header className="border-b border-slate-200 bg-white px-4 py-3">
+        <a href="/gate" className="text-sm font-bold text-[#a6192e]">American Heart Association</a>
+      </header>
+      <div className="flex flex-1 items-center justify-center">
+        <div className="w-full max-w-sm rounded-lg border border-slate-200 bg-white p-8 shadow-md">
+        <h2 className="mb-1 text-xl font-semibold text-slate-900">
+          CHTI Business Scouting Tool
         </h2>
+        <p className="mb-1 text-sm font-medium text-slate-600">Security layer</p>
         <p className="mb-4 text-sm text-slate-500">
           Enter the 7-digit access code to continue
         </p>
@@ -60,6 +65,7 @@ export default function GatePage() {
             Continue
           </button>
         </form>
+        </div>
       </div>
     </div>
   );
